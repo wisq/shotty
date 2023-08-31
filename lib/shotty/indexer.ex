@@ -1,6 +1,7 @@
 defmodule Shotty.Indexer do
   @indexers %{
     :mtime => Shotty.Indexer.Mtime,
+    :sorted => Shotty.Indexer.Sorted,
     :steam => Shotty.Indexer.Steam
   }
 

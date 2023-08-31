@@ -31,11 +31,16 @@ defmodule Shotty.Indexer.Sorted do
   @impl true
   def latest(config, count) do
     list_files_sorted(config.path, fn base, _full ->
-      if base =~ config.include && !(base =~ config.exclude) do
-        {:sort_by, base}
-      else
-        :skip
+      case Regex.named_captures(config.include, base) do
+        %{"sort" => key} -> {:sort_by, key}
+        %{"sort_integer" => n} -> {:sort_by, String.to_integer(n)}
+        %{} -> {:sort_by, base}
+        nil -> :skip
       end
+      |> then(fn
+        {:sort_by, _} = rval -> if base =~ config.exclude, do: :skip, else: rval
+        :skip -> :skip
+      end)
     end)
     |> Enum.take(-count)
   end
