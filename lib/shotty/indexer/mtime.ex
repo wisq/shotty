@@ -1,6 +1,8 @@
 defmodule Shotty.Indexer.Mtime do
   @behaviour Shotty.Indexer
 
+  import Shotty.Indexer.Common
+
   defmodule Config do
     @enforce_keys [:path]
     defstruct(
@@ -33,32 +35,5 @@ defmodule Shotty.Indexer.Mtime do
     |> Enum.sort_by(fn {p, mtime} -> {mtime, p} end)
     |> Enum.take(-count)
     |> Enum.map(fn {p, _} -> p end)
-  end
-
-  defp list_files(path, filter) when is_function(filter) do
-    File.ls!(path)
-    |> Enum.reduce([], fn base, accum ->
-      full = Path.join(path, base)
-
-      case filter.(base, full) do
-        true -> [full | accum]
-        false -> accum
-      end
-    end)
-  end
-
-  defp list_files(path, %Regex{} = include) do
-    list_files(path, fn base, _full -> base =~ include end)
-  end
-
-  defp list_files(path, %Regex{} = include, %Regex{} = exclude) do
-    list_files(path, fn base, _full ->
-      base =~ include && !(base =~ exclude)
-    end)
-  end
-
-  defp with_unix_mtime(path) do
-    mtime = File.stat!(path, time: :posix).mtime
-    {path, mtime}
   end
 end

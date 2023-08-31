@@ -1,6 +1,8 @@
 defmodule Shotty.Indexer.Steam do
   @behaviour Shotty.Indexer
 
+  import Shotty.Indexer.Common
+
   @impl true
   def configure(opts) do
     Keyword.fetch!(opts, :path)
@@ -36,22 +38,6 @@ defmodule Shotty.Indexer.Steam do
     list_files(path, fn base, full ->
       base =~ regex && File.dir?(full)
     end)
-  end
-
-  defp list_files(path, filter) when is_function(filter) do
-    File.ls!(path)
-    |> Enum.reduce([], fn base, accum ->
-      full = Path.join(path, base)
-
-      case filter.(base, full) do
-        true -> [full | accum]
-        false -> accum
-      end
-    end)
-  end
-
-  defp list_files(path, %Regex{} = regex) do
-    list_files(path, fn base, _full -> base =~ regex end)
   end
 
   defp take_latest_files(dir_mtimes, count) do
@@ -90,13 +76,7 @@ defmodule Shotty.Indexer.Steam do
   defp ls_file_mtimes(dir, count) do
     list_files(dir, ~r/^\d+_\d+\.jpg$/)
     |> Enum.sort()
-    |> Enum.reverse()
-    |> Enum.take(count)
+    |> Enum.take(-count)
     |> Enum.map(&with_unix_mtime/1)
-  end
-
-  defp with_unix_mtime(path) do
-    mtime = File.stat!(path, time: :posix).mtime
-    {path, mtime}
   end
 end
