@@ -13,6 +13,10 @@ config :shotty,
       path: "/mnt/g/genshin/Genshin Impact/Genshin Impact game/ScreenShot",
       include: ~r/\.png$/
     ],
+    obs: [
+      path: "/mnt/v/obs",
+      include: ~r/Screenshot .*\.png$/
+    ],
     steam: [
       path: "/mnt/g/steam/userdata/33784271",
       indexer: :steam
