@@ -1,4 +1,4 @@
-defmodule Shotty.Indexer.Generic do
+defmodule Shotty.Indexer.Mtime do
   @behaviour Shotty.Indexer
 
   defmodule Config do

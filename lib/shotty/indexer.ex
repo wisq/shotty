@@ -1,10 +1,10 @@
 defmodule Shotty.Indexer do
   @indexers %{
-    :generic => Shotty.Indexer.Generic,
+    :mtime => Shotty.Indexer.Mtime,
     :steam => Shotty.Indexer.Steam
   }
 
-  @default_indexer :generic
+  @default_indexer :mtime
 
   @type config :: term
   @callback configure(opts :: Keyword.t()) :: config()
