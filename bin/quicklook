@@ -1,0 +1,37 @@
+#!/bin/sh
+
+error() {
+	echo "$1" 1>&2
+	exit 1
+}
+
+test "$#" -eq 1 || error "Usage: $0 <file>"
+
+FILE="$1"
+
+test -e "$FILE" || error "File not found: $FILE"
+test -f "$FILE" || error "Not a regular file: $FILE"
+
+exec osascript - "$FILE" << 'EOF'
+on run argv
+	set p to (item 1 of argv) as text
+	
+	# Reveal the file in Finder.
+	# If QuickLook is already open, this will change it to the new file.
+	tell application "Finder"
+		reveal POSIX file p as text
+		activate
+	end tell
+	
+	# Open QuickLook if needed.
+	# If already open, the menu item becomes "Close Quick Look", so we do nothing here.
+	tell application "System Events" to tell process "Finder"
+		try
+			click menu item "Quick Look" of menu 1 of menu bar item "File" of menu bar 1
+		on error number -1728
+		end try
+	end tell
+	
+	return
+end run
+EOF
