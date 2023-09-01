@@ -94,11 +94,12 @@ tmpdir="`mktemp -d -p "$target"`"
 cd "$tmpdir"
 
 zip="shotty.zip"
-curl -sS -o "$zip" "${url}${path}/${count}"
+head="headers.txt"
+curl -sS -o "$zip" -D "$head" "${url}${path}/${count}"
 
-if [ "`head -c 2 "$zip"`" = "PK" ]; then
+if grep -iq "content-type: application/zip" "$head"; then
 	unzip -j "$zip"
-	rm "$zip"
+	rm "$zip" "$head"
 
 	ln -f * "$target"
 
