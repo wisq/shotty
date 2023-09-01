@@ -2,13 +2,35 @@
 
 DEFAULT_SHOTTY_URL="http://localhost:4000/"
 DEFAULT_SHOTTY_PATH="$HOME/shotty"
+
 url="${SHOTTY_URL:-$DEFAULT_SHOTTY_URL}"
 target="${SHOTTY_PATH:-$DEFAULT_SHOTTY_PATH}"
+
+usage() {
+	cat 1>&2 << EOM
+Usage: $0 <path> [count]
+
+     - path: 	A configured Shotty destination on the target.
+     - count: 	Pick the Nth most recent image (default: "1", the latest).
+		This can also be a range in the format "n..m".
+
+Other behaviour is configured by environment variables:
+
+ - SHOTTY_URL:	URL to the shotty server.
+		  Default:	${DEFAULT_SHOTTY_URL}
+		  Currently:	${url}
+ - SHOTTY_PATH:	Path to store files.
+		  Default:	${DEFAULT_SHOTTY_PATH}
+		  Currently:	${target}
+EOM
+	exit 1
+}
 
 open="open"
 open_arg=""
 count=1
 err=0
+expecting="path"
 
 while test $# -gt 0; do
 	case "$1" in
@@ -34,12 +56,22 @@ while test $# -gt 0; do
 		        open_arg="$1"
 			;;
 
-		[0-9]*)
-			count="$1"
+		[a-z]*)
+			if [ "$expecting" = "path" ]; then
+				path="$1"
+				expecting="count"
+			else
+				usage
+			fi
 			;;
 
-		[a-z]*)
-			path="$1"
+		[0-9]*)
+			if [ "$expecting" = "count" ]; then
+				count="$1"
+				expecting="done"
+			else
+				usage
+			fi
 			;;
 
 		*)
@@ -53,23 +85,7 @@ done
 if [ "$err" -gt 0 ]; then
 	exit 1
 elif [ "$path" = "" ]; then
-	cat 1>&2 << EOM
-Usage: $0 <path> [count]
-
-     - path: 	A configured Shotty destination on the target.
-     - count: 	Pick the Nth most recent image (default: "1", the latest).
-		This can also be a range in the format "n..m".
-
-Other behaviour is configured by environment variables:
-
- - SHOTTY_URL:	URL to the shotty server.
-		  Default:	${DEFAULT_SHOTTY_URL}
-		  Currently:	${url}
- - SHOTTY_PATH:	Path to store files.
-		  Default:	${DEFAULT_SHOTTY_PATH}
-		  Currently:	${target}
-EOM
-	exit 1
+	usage
 fi
 
 set -e
