@@ -31,13 +31,13 @@ And you're all set!
 
 Basic usage:
 
- * `bin/shotty mypath` — fetch the most recent file from the `mypath` path, and open it with `open`
+ * `shotty mypath` — fetch the most recent file from the `mypath` path, and open it with `open`
 
 With the optional `count` argument, you can choose which file(s) to retrieve:
 
- * `bin/shotty mypath 1` — fetch the most recent file (same as not specifying `count` at all)
- * `bin/shotty mypath 5` — fetch the 5th most recent file
- * `bin/shotty mypath 7..9` — fetch the 7th through 9th most recent files (in a single request)
+ * `shotty mypath 1` — fetch the most recent file (same as not specifying `count` at all)
+ * `shotty mypath 5` — fetch the 5th most recent file
+ * `shotty mypath 7..9` — fetch the 7th through 9th most recent files (in a single request)
 
 With additional arguments, you can choose how to open the downloaded file(s):
 
