@@ -35,6 +35,10 @@ defmodule Shotty.Indexer.Common do
     |> Enum.map(fn {_, file} -> file end)
   end
 
+  def unix_now do
+    System.os_time(:second)
+  end
+
   def unix_mtime(path) do
     File.stat!(path, time: :posix).mtime
   end

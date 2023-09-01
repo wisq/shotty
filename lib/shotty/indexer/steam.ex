@@ -15,7 +15,6 @@ defmodule Shotty.Indexer.Steam do
     |> Enum.map(&with_unix_mtime/1)
     |> Enum.sort_by(fn {p, mtime} -> {0 - mtime, p} end)
     |> take_latest_files(count)
-    |> Enum.take(count)
   end
 
   defp screenshot_paths(path) do
@@ -43,20 +42,21 @@ defmodule Shotty.Indexer.Steam do
   defp take_latest_files(dir_mtimes, count) do
     dir_mtimes
     |> Enum.reduce_while(nil, &take_latest_reduce(count, &1, &2))
+    |> then(fn {_mtime, files} -> files end)
   end
 
   # First directory:
-  defp take_latest_reduce(count, {dir, _}, nil) do
-    take_latest_reduce_more(count, dir, [])
+  defp take_latest_reduce(count, dir_mtime, nil) do
+    take_latest_reduce(count, dir_mtime, {unix_now(), []})
   end
 
   # Additional directories:
-  defp take_latest_reduce(count, {dir, dir_mtime}, [oldest_file | _] = accum) do
+  defp take_latest_reduce(count, {dir, dir_mtime}, {oldest_mtime, files} = accum) do
     cond do
-      Enum.count(accum) < count ->
+      Enum.count(files) < count ->
         take_latest_reduce_more(count, dir, accum)
 
-      dir_mtime >= unix_mtime(oldest_file) ->
+      dir_mtime >= oldest_mtime ->
         take_latest_reduce_more(count, dir, accum)
 
       true ->
@@ -64,11 +64,17 @@ defmodule Shotty.Indexer.Steam do
     end
   end
 
-  defp take_latest_reduce_more(count, dir, accum) do
-    {:cont,
-     list_files(dir, ~r/^\d+_\d+\.jpg$/)
-     |> Enum.concat(accum)
-     |> Enum.sort_by(fn f -> {Path.basename(f), f} end)
-     |> Enum.take(-count)}
+  defp take_latest_reduce_more(count, dir, {o_mt, previous_files}) do
+    list_files(dir, ~r/^\d+_\d+\.jpg$/)
+    |> Enum.concat(previous_files)
+    |> Enum.sort_by(fn f -> {Path.basename(f), f} end)
+    |> Enum.take(-count)
+    |> then(fn files ->
+      {:cont, {oldest_mtime(o_mt, files, previous_files), files}}
+    end)
   end
+
+  defp oldest_mtime(mt, [], _), do: mt
+  defp oldest_mtime(mt, [f | _], [f | _]), do: mt
+  defp oldest_mtime(_, [f | _], _), do: unix_mtime(f)
 end
