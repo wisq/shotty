@@ -23,6 +23,21 @@ defmodule Shotty.RouterTest do
       assert conn.status == 404
       assert conn.resp_body == "no file at that index"
     end
+
+    test "sets zip entry mtime to file mtime" do
+      {[file_path], _} = generate_files(1)
+      mock(fn "path", 1 -> {:ok, [file_path]} end)
+
+      old_mtime = System.os_time(:second) - Enum.random(1..1_000_000)
+      File.touch!(file_path, old_mtime)
+
+      conn = get("/path/1")
+      {:ok, unzip_dir} = unzip(conn.resp_body)
+      unzip_file = Path.join(unzip_dir, Path.basename(file_path))
+
+      assert {:ok, %File.Stat{mtime: new_mtime}} = File.stat(unzip_file, time: :posix)
+      assert_in_delta old_mtime, new_mtime, 1
+    end
   end
 
   describe "when fetching a specific image index" do
@@ -110,12 +125,18 @@ defmodule Shotty.RouterTest do
     )
   end
 
-  defp zip_contents(zip_data) do
+  defp unzip(zip_data) do
     {:ok, zip_file} = Briefly.create()
     File.write!(zip_file, zip_data)
 
     {:ok, unzip_dir} = Briefly.create(directory: true)
-    System.cmd("unzip", [zip_file], cd: unzip_dir)
+    System.cmd("unzip", [zip_file], cd: unzip_dir, env: [{"TZ", "UTC"}])
+
+    {:ok, unzip_dir}
+  end
+
+  defp zip_contents(zip_data) do
+    {:ok, unzip_dir} = unzip(zip_data)
 
     File.ls!(unzip_dir)
     |> Enum.sort()

@@ -48,9 +48,12 @@ defmodule Shotty.Router do
   defp zip_stream(files) do
     files
     |> Enum.map(fn file ->
+      {:ok, %File.Stat{mtime: mtime}} = File.stat(file, time: :posix)
+
       Zstream.entry(
         Path.basename(file),
-        File.stream!(file, [], 4096)
+        File.stream!(file, [], 4096),
+        mtime: DateTime.from_unix!(mtime)
       )
     end)
     |> Zstream.zip()

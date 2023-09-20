@@ -98,7 +98,7 @@ head="headers.txt"
 curl -sS -o "$zip" -D "$head" "${url}${path}/${count}"
 
 if grep -iq "content-type: application/zip" "$head"; then
-	unzip -j "$zip"
+	TZ=UTC unzip -j "$zip"
 	rm "$zip" "$head"
 
 	ln -f * "$target"
