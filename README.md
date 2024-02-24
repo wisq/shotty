@@ -16,6 +16,7 @@ On the server:
     * See [Configuring Shotty](CONFIGURATION.md) for details, including the various indexers available.
     * Note the port; you'll need that later for `SHOTTY_URL`, below.
 4. Run `MIX_ENV=prod mix run --no-halt` to launch the server.
+    * On Windows, see `shotty.bat` for an example.
 
 On the client:
 

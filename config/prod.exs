@@ -6,32 +6,32 @@ config :shotty,
   paths: [
     ffxiv: [
       indexer: :sorted,
-      path: "/mnt/c/Users/wisq/Pictures/ffxiv",
+      path: "c:/Users/wisq/Pictures/ffxiv",
       include: ~r/^\d{4}-.*\.png$/,
       exclude: ~r/_original\.png$/
     ],
     genshin: [
       indexer: :mtime,
-      path: "/mnt/g/genshin/Genshin Impact/Genshin Impact game/ScreenShot",
+      path: "g:/genshin/Genshin Impact/Genshin Impact game/ScreenShot",
       include: ~r/\.png$/
     ],
     obs: [
       indexer: :sorted,
-      path: "/mnt/v/obs",
+      path: "v:/obs",
       include: ~r/Screenshot \d{4}-.*\.png$/
     ],
     steam: [
       indexer: :steam,
-      path: "/mnt/g/steam/userdata/33784271"
+      path: "g:/steam/userdata/33784271"
     ],
     vlc: [
       indexer: :sorted,
-      path: "/mnt/c/Users/wisq/Pictures",
+      path: "c:/Users/wisq/Pictures",
       include: ~r/^vlcsnap-\d{4}-.*\.png$/
     ],
     windows: [
       indexer: :sorted,
-      path: "/mnt/c/Users/wisq/Pictures/Screenshots",
+      path: "c:/Users/wisq/Pictures/Screenshots",
       include: ~r/^Screenshot \((?<sort_integer>\d+)\).png$/
     ]
   ]
