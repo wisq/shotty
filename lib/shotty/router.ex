@@ -1,6 +1,5 @@
 defmodule Shotty.Router do
   use Plug.Router
-  require Logger
   alias Shotty.Fetcher
 
   plug(:match)
@@ -69,9 +68,4 @@ defmodule Shotty.Router do
 
   defp error_message(str) when is_binary(str), do: {400, str}
   defp error_message(:index_not_found), do: {404, "no file at that index"}
-
-  defp error_message(err) do
-    Logger.error("Unknown error: #{err}")
-    {400, "unknown error"}
-  end
 end

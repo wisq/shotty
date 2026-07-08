@@ -26,7 +26,7 @@ defmodule Shotty.Fetcher do
     end
   end
 
-  def fetch(path, min..max, pid) when min >= 1 do
+  def fetch(path, min..max//_, pid) when min >= 1 do
     with {:ok, all_files} <- GenServer.call(pid, {:latest, path, max}),
          [_ | _] = files <- Enum.drop(all_files, -(min - 1)) do
       {:ok, files}
