@@ -4,19 +4,22 @@ defmodule Shotty.Indexer.Sorted do
   import Shotty.Indexer.Common
 
   defmodule Config do
-    @enforce_keys [:path]
-    defstruct(
-      path: nil,
+    @enforce_keys [:path, :include, :exclude]
+    defstruct(@enforce_keys)
+
+    def new(opts) do
+      opts
       # Default: regex that matches anything
-      include: ~r//,
+      |> Keyword.put_new(:include, ~r//)
       # Default: regex that matches nothing (impossible regex)
-      exclude: ~r/(?!x)x/
-    )
+      |> Keyword.put_new(:exclude, ~r/(?!x)x/)
+      |> then(&struct!(Config, &1))
+    end
   end
 
   @impl true
   def configure(opts) do
-    config = struct!(Config, opts)
+    config = Config.new(opts)
 
     case File.ls(config.path) do
       {:ok, _} ->
