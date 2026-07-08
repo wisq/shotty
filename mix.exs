@@ -29,7 +29,7 @@ defmodule Shotty.MixProject do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-      {:bandit, "~> 0.6"},
+      {:bandit, "~> 1.0"},
       {:zstream, "~> 0.6"},
       {:briefly, "~> 0.4.0", only: [:dev, :test]},
       {:mix_test_watch, "~> 1.0", only: :dev, runtime: false},

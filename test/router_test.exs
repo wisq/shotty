@@ -2,7 +2,7 @@ defmodule Shotty.RouterTest do
   # Can be async as long as nothing else is calling Shotty.Fetcher.
   # (This means the Shotty.Fetcher tests must specify a different `name` option.)
   use ExUnit.Case, async: true
-  use Plug.Test
+  import Plug.Test
 
   alias Shotty.Test.MockFetcher
 
