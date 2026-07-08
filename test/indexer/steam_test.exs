@@ -76,7 +76,7 @@ defmodule Shotty.Indexer.SteamTest do
   end
 
   defp pick_one(n) when is_integer(n), do: n
-  defp pick_one(_.._ = r), do: Enum.random(r)
+  defp pick_one(_.._//1 = r), do: Enum.random(r)
 
   defp pick_many(nr, count) do
     1..count

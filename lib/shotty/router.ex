@@ -51,7 +51,7 @@ defmodule Shotty.Router do
 
       Zstream.entry(
         Path.basename(file),
-        File.stream!(file, [], 4096),
+        File.stream!(file, 4096),
         mtime: DateTime.from_unix!(mtime)
       )
     end)
